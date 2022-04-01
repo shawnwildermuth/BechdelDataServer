@@ -1,4 +1,5 @@
 #region Wiring Up
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,14 @@ if (app.Environment.IsDevelopment())
 {
   app.UseDeveloperExceptionPage();
 }
+
+app.UseHttpsRedirection();
+app.UseCors(cfg =>
+{
+  cfg.WithMethods("GET");
+  cfg.AllowAnyHeader();
+  cfg.AllowAnyOrigin();
+});
 
 app.UseSwagger();
 
@@ -84,7 +93,9 @@ void MapApis(WebApplication app)
 void Register(IServiceCollection svc)
 {
   svc.AddEndpointsApiExplorer();
-  svc.AddScoped<BechdelDataServer>();
+  svc.AddSingleton<BechdelDataServer>();
+
+  svc.AddCors();
 
   svc.AddSwaggerGen(setup =>
   {

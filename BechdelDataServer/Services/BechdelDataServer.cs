@@ -25,7 +25,8 @@ internal class BechdelDataServer
       .Where(y => y.Year == year)
       .SelectMany(d => d.Films)
       .Where(f => f.Success == succeeded)
-      .OrderBy(f => f.Title);
+      .OrderBy(f => f.Title)
+      .ToList();
 
     return result;
   }
@@ -36,7 +37,8 @@ internal class BechdelDataServer
     
     var result = data?.SelectMany(d => d.Films)
       .Where(f => f.Success == succeeded)
-      .OrderBy(f => f.Title);
+      .OrderBy(f => f.Title)
+      .ToList();
 
     return result;
   }
@@ -54,7 +56,8 @@ internal class BechdelDataServer
     var result = data?
       .OrderBy(d => d.Year)
       .SelectMany(d => d.Films)
-      .OrderBy(f => f.Title);
+      .OrderBy(f => f.Title)
+      .ToList();
 
     return result;
   }
