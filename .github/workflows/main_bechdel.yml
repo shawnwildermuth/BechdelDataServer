@@ -24,12 +24,10 @@ jobs:
           include-prerelease: false
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-        working-directory: BechdelDataServer
+        run: dotnet build --configuration Release ./BechdelDataServer/BechdelDataServer.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-        working-directory: BechdelDataServer
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp ./BechdelDataServer/BechdelDataServer.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
