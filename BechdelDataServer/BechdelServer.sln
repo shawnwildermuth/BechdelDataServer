@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4FEA816-4B63-48E4-8817-61E76AA261EF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\.github\workflows\main_bechdel.yml = ..\.github\workflows\main_bechdel.yml
 	EndProjectSection
 EndProject
 Global
