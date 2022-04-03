@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,15 +9,16 @@ using Xunit;
 
 namespace BechdelDataServer.Tests;
 
-public class YearTests
+public class YearTests : IDisposable
 {
+  private readonly WebApplicationFactory<Program> _app;
   private readonly HttpClient _client;
 
   public YearTests()
   {
-    var app = new WebApplicationFactory<Program>();
+    _app = new WebApplicationFactory<Program>();
 
-    _client = app.CreateClient();
+    _client = _app.CreateClient();
   }
 
   [Fact]
@@ -75,5 +77,10 @@ public class YearTests
     Assert.True(result?.Count > 0);
     Assert.True(result?.PageCount > 0);
     Assert.True(result?.Results?.Any());
+  }
+
+  public void Dispose()
+  {
+    _app.Dispose();
   }
 }

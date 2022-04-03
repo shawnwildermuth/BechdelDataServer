@@ -1,8 +1,8 @@
 #region Wiring Up
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+bool isTesting = builder.Configuration.GetValue<bool>("IsTesting", true);
 
 Register(builder.Services);
 
@@ -43,7 +43,7 @@ void MapApis(WebApplication app)
     return result;
   }).WithTags("By Year").Produces(200).ProducesProblem(404);
 
-  app.MapGet("api/years/{id:int}", async (BechdelDataService ds,    
+  app.MapGet("api/years/{id:int}", async (BechdelDataService ds,
     int id) =>
   {
     var result = await ds.LoadYearAsync(id);
@@ -63,16 +63,16 @@ void MapApis(WebApplication app)
   app.MapGet("api/years/{year:int}/passed", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
   {
     pageSize = pageSize ?? 50;
-    FilmResult  data =await ds.LoadFilmsByResultAndYearAsync(true, year, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
-    if (data.Results is null)Results.NotFound();
+    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(true, year, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (data.Results is null) Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Year").Produces(200).ProducesProblem(404);
 
   app.MapGet("api/films", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
     pageSize = pageSize ?? 50;
-    FilmResult  data =await ds.LoadAllFilmsAsync(page.GetValueOrDefault(), pageSize.GetValueOrDefault());
-    if (data.Results is null)return Results.NotFound();
+    FilmResult data = await ds.LoadAllFilmsAsync(page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
 
@@ -80,16 +80,16 @@ void MapApis(WebApplication app)
   app.MapGet("api/films/failed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
     pageSize = pageSize ?? 50;
-    FilmResult  data =await ds.LoadFilmsByResultAsync(false, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
-    if (data.Results is null)return Results.NotFound();
+    FilmResult data = await ds.LoadFilmsByResultAsync(false, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
 
   app.MapGet("api/films/passed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
     pageSize = pageSize ?? 50;
-    FilmResult  data =await ds.LoadFilmsByResultAsync(true, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
-    if (data.Results is null)return Results.NotFound();
+    FilmResult data = await ds.LoadFilmsByResultAsync(true, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
 
@@ -103,11 +103,13 @@ void Register(IServiceCollection svc)
 
   svc.AddCors();
 
-  
   svc.AddSwaggerGen(setup =>
   {
-    var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"../../../../BechdelDataServer/BechdelDataServer.xml"));
-    setup.IncludeXmlComments(path);
+    if (!isTesting)
+    {
+      var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"BechdelDataServer.xml"));
+      setup.IncludeXmlComments(path);
+    }
     setup.SwaggerDoc("v1", new OpenApiInfo()
     {
       Description = "Bechdel Test API using data from FiveThirtyEight.com",
