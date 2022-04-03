@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>..\BechdelDataServer.xml</DocumentationFile>
+    <DocumentationFile>.\BechdelDataServer.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
