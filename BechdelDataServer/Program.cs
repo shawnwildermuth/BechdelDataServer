@@ -106,7 +106,7 @@ void Register(IServiceCollection svc)
   
   svc.AddSwaggerGen(setup =>
   {
-    var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\BechdelDataServer.xml"));
+    var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"../../../../BechdelDataServer.xml"));
     setup.IncludeXmlComments(path);
     setup.SwaggerDoc("v1", new OpenApiInfo()
     {
