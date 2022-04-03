@@ -17,49 +17,65 @@ internal class BechdelDataServer
     return result;
   }
 
-  public async Task<IEnumerable<Film>?> LoadFilmsByResultAndYearAsync(bool succeeded, int year)
+  public async Task<IEnumerable<FilmYear>?> LoadAllYears()
   {
     var data = await LoadAsync();
 
-    var result = data?
+    return data;
+  }
+
+  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)>
+    LoadFilmsByResultAndYearAsync(bool succeeded, int year, int page, int pageSize)
+  {
+    var data = await LoadAsync();
+
+    if (data is null) return (0, 0, 0, null);
+
+    IOrderedEnumerable<Film> qry = data
       .Where(y => y.Year == year)
       .SelectMany(d => d.Films)
       .Where(f => f.Success == succeeded)
-      .OrderBy(f => f.Title)
-      .ToList();
+      .OrderBy(f => f.Title);
 
-    return result;
+    return GetCountAndData(qry, page, pageSize);
   }
 
-  public async Task<IEnumerable<Film>?> LoadFilmsByResultAsync(bool succeeded)
+  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)>
+    LoadFilmsByResultAsync(bool succeeded, int page, int pageSize)
   {
     var data = await LoadAsync();
-    
-    var result = data?.SelectMany(d => d.Films)
+
+    if (data is null) return (0, 0, 0, null);
+
+    IOrderedEnumerable<Film> qry = data.SelectMany(d => d.Films)
       .Where(f => f.Success == succeeded)
-      .OrderBy(f => f.Title)
-      .ToList();
+      .OrderBy(f => f.Title);
 
-    return result;
+    return GetCountAndData(qry, page, pageSize);
   }
 
-  public async Task<IEnumerable<FilmYear>?> LoadAllYears()
-  {
-    var result = await LoadAsync();
-    return result;
-  }
-
-  public async Task<IEnumerable<Film>?> LoadAllFilmsAsync()
+  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)> LoadAllFilmsAsync(int page, int pageSize)
   {
     var data = await LoadAsync();
 
-    var result = data?
-      .OrderBy(d => d.Year)
-      .SelectMany(d => d.Films)
-      .OrderBy(f => f.Title)
-      .ToList();
+    if (data is null) return (0, 0, 0, null);
 
-    return result;
+    IOrderedEnumerable<Film> qry = data.OrderBy(d => d.Year)
+                                       .SelectMany(d => d.Films)
+                                       .OrderBy(f => f.Title);
+
+    return GetCountAndData(qry, page, pageSize);
+  }
+
+  (int count, int pageCount, int currentPage, IEnumerable<Film>? results) GetCountAndData(IOrderedEnumerable<Film> query, int page, int pageSize)
+  {
+    var count = query.Count();
+    var pageCount = (int)Math.Ceiling((double)(count / pageSize));
+    var results = query.Skip(page * pageSize)
+                     .Take(pageSize)
+                     .ToList();
+
+    return (count, pageCount, page, results);
   }
 
   protected async Task<IEnumerable<FilmYear>?> LoadAsync()
