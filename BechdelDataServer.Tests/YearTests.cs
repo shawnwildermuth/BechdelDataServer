@@ -61,6 +61,7 @@ public class YearTests : IDisposable
     Assert.NotNull(result);
     Assert.True(result?.Count > 0);
     Assert.True(result?.PageCount > 0);
+    Assert.True(result?.CurrentPage > 0);
     Assert.True(result?.Results?.Any());
   }
 
@@ -76,6 +77,41 @@ public class YearTests : IDisposable
     Assert.NotNull(result);
     Assert.True(result?.Count > 0);
     Assert.True(result?.PageCount > 0);
+    Assert.True(result?.CurrentPage > 0);
+    Assert.True(result?.Results?.Any());
+  }
+
+  [Fact]
+  public async void CanGetYearFailedMaxPage()
+  {
+    var response = await _client.GetAsync("/api/years/2013/failed");
+
+    Assert.True(response.IsSuccessStatusCode);
+
+
+    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
+
+    response = await _client.GetAsync($"/api/years/2013/failed?page={result?.CurrentPage}");
+
+    var lastResult = await response.Content.ReadFromJsonAsync<FilmResult>();
+
+    Assert.True(result?.Results?.Any());
+  }
+
+  [Fact]
+  public async void CanGetYearPassedMaxPage()
+  {
+    var response = await _client.GetAsync("/api/years/2013/passed");
+
+    Assert.True(response.IsSuccessStatusCode);
+
+
+    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
+
+    response = await _client.GetAsync($"/api/years/2013/passed?page={result?.CurrentPage}");
+
+    var lastResult = await response.Content.ReadFromJsonAsync<FilmResult>();
+
     Assert.True(result?.Results?.Any());
   }
 

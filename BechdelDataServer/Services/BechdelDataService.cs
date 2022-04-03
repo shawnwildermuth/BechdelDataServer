@@ -24,7 +24,11 @@ internal class BechdelDataService
     return data;
   }
 
-  public async Task<FilmResult> LoadFilmsByResultAndYearAsync(bool succeeded, int year, int page, int pageSize)
+  public async Task<FilmResult> LoadFilmsByResultAndYearAsync(
+    bool succeeded, 
+    int year, 
+    int page, 
+    int pageSize)
   {
     var data = await LoadAsync();
 
@@ -36,10 +40,13 @@ internal class BechdelDataService
       .Where(f => f.Success == succeeded)
       .OrderBy(f => f.Title);
 
-    return GetCountAndData(qry, page, pageSize);
+    return GetFilmResult(qry, page, pageSize);
   }
 
-  public async Task<FilmResult> LoadFilmsByResultAsync(bool succeeded, int page, int pageSize)
+  public async Task<FilmResult> LoadFilmsByResultAsync(
+    bool succeeded, 
+    int page, 
+    int pageSize)
   {
     var data = await LoadAsync();
 
@@ -49,7 +56,7 @@ internal class BechdelDataService
       .Where(f => f.Success == succeeded)
       .OrderBy(f => f.Title);
 
-    return GetCountAndData(qry, page, pageSize);
+    return GetFilmResult(qry, page, pageSize);
   }
 
   public async Task<FilmResult> LoadAllFilmsAsync(int page, int pageSize)
@@ -62,18 +69,18 @@ internal class BechdelDataService
                                        .SelectMany(d => d.Films)
                                        .OrderBy(f => f.Title);
 
-    return GetCountAndData(qry, page, pageSize);
+    return GetFilmResult(qry, page, pageSize);
   }
 
-  FilmResult GetCountAndData(IOrderedEnumerable<Film> query, int page, int pageSize)
+  FilmResult GetFilmResult(IOrderedEnumerable<Film> query, int page, int pageSize)
   {
     var count = query.Count();
-    var pageCount = (int)Math.Floor((double)(count / pageSize));
-    var results = query.Skip(page * pageSize)
+    var pageCount = (int)Math.Ceiling(((double)count / (double)pageSize));
+    var results = query.Skip((page - 1) * pageSize)
                      .Take(pageSize)
                      .ToList();
 
-    return new FilmResult(count, pageCount + 1, page, results);
+    return new FilmResult(count, pageCount, page, results);
   }
 
   protected async Task<IEnumerable<FilmYear>?> LoadAsync()

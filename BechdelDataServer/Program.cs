@@ -54,24 +54,29 @@ void MapApis(WebApplication app)
   app.MapGet("api/years/{year:int}/failed", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
   {
     if (ds is null) return Results.BadRequest();
-    pageSize = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(false, year, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(false, year, pageNumber, pagerTake);
     if (data.Results is null) Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Year").Produces(200).ProducesProblem(404);
 
   app.MapGet("api/years/{year:int}/passed", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
   {
-    pageSize = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(true, year, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (ds is null) return Results.BadRequest();
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(true, year, pageNumber, pagerTake);
     if (data.Results is null) Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Year").Produces(200).ProducesProblem(404);
 
   app.MapGet("api/films", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    pageSize = pageSize ?? 50;
-    FilmResult data = await ds.LoadAllFilmsAsync(page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (ds is null) return Results.BadRequest();
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadAllFilmsAsync(pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
@@ -79,16 +84,20 @@ void MapApis(WebApplication app)
 
   app.MapGet("api/films/failed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    pageSize = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAsync(false, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (ds is null) return Results.BadRequest();
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAsync(false, pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
 
   app.MapGet("api/films/passed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    pageSize = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAsync(true, page.GetValueOrDefault(), pageSize.GetValueOrDefault());
+    if (ds is null) return Results.BadRequest();
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAsync(true, pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
   }).WithTags("By Film").Produces(200).ProducesProblem(404);
