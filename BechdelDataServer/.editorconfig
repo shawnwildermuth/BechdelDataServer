@@ -94,6 +94,9 @@ dotnet_naming_style.prepend_with__.word_separator =
 dotnet_naming_style.prepend_with__.capitalization = camel_case
 csharp_style_throw_expression = true:suggestion
 
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent
+
 [*.vb]
 #### Naming styles ####
 

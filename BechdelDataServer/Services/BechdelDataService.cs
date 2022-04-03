@@ -1,11 +1,11 @@
-﻿namespace BechelServer.Services;
+﻿namespace BechdelDataServer.Services;
 
-internal class BechdelDataServer
+internal class BechdelDataService
 {
-  private readonly ILogger<BechdelDataServer> _logger;
+  private readonly ILogger<BechdelDataService> _logger;
   private IEnumerable<FilmYear>? _data;
 
-  public BechdelDataServer(ILogger<BechdelDataServer> logger)
+  public BechdelDataService(ILogger<BechdelDataService> logger)
   {
     _logger = logger;
   }
@@ -24,12 +24,11 @@ internal class BechdelDataServer
     return data;
   }
 
-  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)>
-    LoadFilmsByResultAndYearAsync(bool succeeded, int year, int page, int pageSize)
+  public async Task<FilmResult> LoadFilmsByResultAndYearAsync(bool succeeded, int year, int page, int pageSize)
   {
     var data = await LoadAsync();
 
-    if (data is null) return (0, 0, 0, null);
+    if (data is null) return FilmResult.Default;
 
     IOrderedEnumerable<Film> qry = data
       .Where(y => y.Year == year)
@@ -40,12 +39,11 @@ internal class BechdelDataServer
     return GetCountAndData(qry, page, pageSize);
   }
 
-  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)>
-    LoadFilmsByResultAsync(bool succeeded, int page, int pageSize)
+  public async Task<FilmResult> LoadFilmsByResultAsync(bool succeeded, int page, int pageSize)
   {
     var data = await LoadAsync();
 
-    if (data is null) return (0, 0, 0, null);
+    if (data is null) return FilmResult.Default;
 
     IOrderedEnumerable<Film> qry = data.SelectMany(d => d.Films)
       .Where(f => f.Success == succeeded)
@@ -54,11 +52,11 @@ internal class BechdelDataServer
     return GetCountAndData(qry, page, pageSize);
   }
 
-  public async Task<(int count, int pageCount, int currentPage, IEnumerable<Film>? results)> LoadAllFilmsAsync(int page, int pageSize)
+  public async Task<FilmResult> LoadAllFilmsAsync(int page, int pageSize)
   {
     var data = await LoadAsync();
 
-    if (data is null) return (0, 0, 0, null);
+    if (data is null) return FilmResult.Default;
 
     IOrderedEnumerable<Film> qry = data.OrderBy(d => d.Year)
                                        .SelectMany(d => d.Films)
@@ -67,15 +65,15 @@ internal class BechdelDataServer
     return GetCountAndData(qry, page, pageSize);
   }
 
-  (int count, int pageCount, int currentPage, IEnumerable<Film>? results) GetCountAndData(IOrderedEnumerable<Film> query, int page, int pageSize)
+  FilmResult GetCountAndData(IOrderedEnumerable<Film> query, int page, int pageSize)
   {
     var count = query.Count();
-    var pageCount = (int)Math.Ceiling((double)(count / pageSize));
+    var pageCount = (int)Math.Floor((double)(count / pageSize));
     var results = query.Skip(page * pageSize)
                      .Take(pageSize)
                      .ToList();
 
-    return (count, pageCount, page, results);
+    return new FilmResult(count, pageCount + 1, page, results);
   }
 
   protected async Task<IEnumerable<FilmYear>?> LoadAsync()

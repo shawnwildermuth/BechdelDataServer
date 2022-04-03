@@ -1,5 +1,5 @@
-﻿global using BechelServer.Services;
-global using BechelServer.Models;
+﻿global using BechdelDataServer.Services;
+global using BechdelDataServer.Models;
 global using System;
 global using System.Collections.Generic;
 global using System.Linq;
