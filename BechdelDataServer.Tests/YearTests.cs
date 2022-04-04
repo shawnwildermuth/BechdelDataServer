@@ -9,18 +9,8 @@ using Xunit;
 
 namespace BechdelDataServer.Tests;
 
-public class YearTests : IDisposable
+public class YearTests : BaseFilmTests
 {
-  private readonly WebApplicationFactory<Program> _app;
-  private readonly HttpClient _client;
-
-  public YearTests()
-  {
-    _app = new WebApplicationFactory<Program>();
-
-    _client = _app.CreateClient();
-  }
-
   [Fact]
   public async void CanGetAllYears()
   {
@@ -50,73 +40,14 @@ public class YearTests : IDisposable
   }
 
   [Fact]
-  public async void CanGetYearFailed()
-  {
-    var response = await _client.GetAsync("/api/years/2013/failed");
-
-    Assert.True(response.IsSuccessStatusCode);
-
-    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    Assert.NotNull(result);
-    Assert.True(result?.Count > 0);
-    Assert.True(result?.PageCount > 0);
-    Assert.True(result?.CurrentPage > 0);
-    Assert.True(result?.Results?.Any());
-  }
+  public async void CanGetYearFailed() => await TestFilms("/api/years/2013/failed");
 
   [Fact]
-  public async void CanGetYearPassed()
-  {
-    var response = await _client.GetAsync("/api/years/2013/passed");
-
-    Assert.True(response.IsSuccessStatusCode);
-
-    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    Assert.NotNull(result);
-    Assert.True(result?.Count > 0);
-    Assert.True(result?.PageCount > 0);
-    Assert.True(result?.CurrentPage > 0);
-    Assert.True(result?.Results?.Any());
-  }
+  public async void CanGetYearPassed() => await TestFilms("/api/years/2013/passed");
 
   [Fact]
-  public async void CanGetYearFailedMaxPage()
-  {
-    var response = await _client.GetAsync("/api/years/2013/failed");
-
-    Assert.True(response.IsSuccessStatusCode);
-
-
-    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    response = await _client.GetAsync($"/api/years/2013/failed?page={result?.CurrentPage}");
-
-    var lastResult = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    Assert.True(result?.Results?.Any());
-  }
+  public async void CanGetYearFailedMaxPage() => await TestFilmsMax("/api/years/2013/failed");
 
   [Fact]
-  public async void CanGetYearPassedMaxPage()
-  {
-    var response = await _client.GetAsync("/api/years/2013/passed");
-
-    Assert.True(response.IsSuccessStatusCode);
-
-
-    var result = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    response = await _client.GetAsync($"/api/years/2013/passed?page={result?.CurrentPage}");
-
-    var lastResult = await response.Content.ReadFromJsonAsync<FilmResult>();
-
-    Assert.True(result?.Results?.Any());
-  }
-
-  public void Dispose()
-  {
-    _app.Dispose();
-  }
+  public async void CanGetYearPassedMaxPage() => await TestFilmsMax("/api/years/2013/passed");
 }
