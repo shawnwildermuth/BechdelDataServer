@@ -36,71 +36,56 @@ app.Run();
 
 void MapApis(WebApplication app)
 {
-  app.MapGet("api/years", async (BechdelDataService ds) =>
-  {
-    var result = await ds.LoadAllYears();
-    if (result is null) Results.NotFound();
-    return result;
-  }).WithTags("By Year").Produces(200).ProducesProblem(404);
-
-  app.MapGet("api/years/{id:int}", async (BechdelDataService ds,
-    int id) =>
-  {
-    var result = await ds.LoadYearAsync(id);
-    if (result is null) Results.NotFound();
-    return result;
-  }).WithTags("By Year").Produces(200).ProducesProblem(404);
-
-  app.MapGet("api/years/{year:int}/failed", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
-  {
-    if (ds is null) return Results.BadRequest();
-    int pageNumber = page ?? 1;
-    int pagerTake = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(false, year, pageNumber, pagerTake);
-    if (data.Results is null) Results.NotFound();
-    return Results.Ok(data);
-  }).WithTags("By Year").Produces(200).ProducesProblem(404);
-
-  app.MapGet("api/years/{year:int}/passed", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
-  {
-    if (ds is null) return Results.BadRequest();
-    int pageNumber = page ?? 1;
-    int pagerTake = pageSize ?? 50;
-    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(true, year, pageNumber, pagerTake);
-    if (data.Results is null) Results.NotFound();
-    return Results.Ok(data);
-  }).WithTags("By Year").Produces(200).ProducesProblem(404);
-
   app.MapGet("api/films", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    if (ds is null) return Results.BadRequest();
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
     int pageNumber = page ?? 1;
     int pagerTake = pageSize ?? 50;
     FilmResult data = await ds.LoadAllFilmsAsync(pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
-  }).WithTags("By Film").Produces(200).ProducesProblem(404);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
 
 
   app.MapGet("api/films/failed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    if (ds is null) return Results.BadRequest();
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
     int pageNumber = page ?? 1;
     int pagerTake = pageSize ?? 50;
     FilmResult data = await ds.LoadFilmsByResultAsync(false, pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
-  }).WithTags("By Film").Produces(200).ProducesProblem(404);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
 
   app.MapGet("api/films/passed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
-    if (ds is null) return Results.BadRequest();
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
     int pageNumber = page ?? 1;
     int pagerTake = pageSize ?? 50;
     FilmResult data = await ds.LoadFilmsByResultAsync(true, pageNumber, pagerTake);
     if (data.Results is null) return Results.NotFound();
     return Results.Ok(data);
-  }).WithTags("By Film").Produces(200).ProducesProblem(404);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
+
+  app.MapGet("api/films/failed/{year:int}", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
+  {
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(false, year, pageNumber, pagerTake);
+    if (data.Results is null) Results.NotFound();
+    return Results.Ok(data);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
+
+  app.MapGet("api/films/passed/{year:int}", async (BechdelDataService ds, int year, int? page, int? pageSize) =>
+  {
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadFilmsByResultAndYearAsync(true, year, pageNumber, pagerTake);
+    if (data.Results is null) Results.NotFound();
+    return Results.Ok(data);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
 
 }
 

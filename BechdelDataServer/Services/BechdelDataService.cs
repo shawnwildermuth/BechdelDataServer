@@ -3,25 +3,11 @@
 internal class BechdelDataService
 {
   private readonly ILogger<BechdelDataService> _logger;
-  private IEnumerable<FilmYear>? _data;
+  private IEnumerable<Film>? _data;
 
   public BechdelDataService(ILogger<BechdelDataService> logger)
   {
     _logger = logger;
-  }
-
-  public async Task<FilmYear?> LoadYearAsync(int id)
-  {
-    var data = await LoadAsync();
-    var result = data?.Where(d => d.Year == id).FirstOrDefault();
-    return result;
-  }
-
-  public async Task<IEnumerable<FilmYear>?> LoadAllYears()
-  {
-    var data = await LoadAsync();
-
-    return data;
   }
 
   public async Task<FilmResult> LoadFilmsByResultAndYearAsync(
@@ -36,8 +22,7 @@ internal class BechdelDataService
 
     IOrderedEnumerable<Film> qry = data
       .Where(y => y.Year == year)
-      .SelectMany(d => d.Films)
-      .Where(f => f.Success == succeeded)
+      .Where(f => f.Passed == succeeded)
       .OrderBy(f => f.Title);
 
     return GetFilmResult(qry, page, pageSize);
@@ -52,8 +37,8 @@ internal class BechdelDataService
 
     if (data is null) return FilmResult.Default;
 
-    IOrderedEnumerable<Film> qry = data.SelectMany(d => d.Films)
-      .Where(f => f.Success == succeeded)
+    IOrderedEnumerable<Film> qry = data
+      .Where(f => f.Passed == succeeded)
       .OrderBy(f => f.Title);
 
     return GetFilmResult(qry, page, pageSize);
@@ -66,8 +51,7 @@ internal class BechdelDataService
     if (data is null) return FilmResult.Default;
 
     IOrderedEnumerable<Film> qry = data.OrderBy(d => d.Year)
-                                       .SelectMany(d => d.Films)
-                                       .OrderBy(f => f.Title);
+                                       .ThenBy(f => f.Title);
 
     return GetFilmResult(qry, page, pageSize);
   }
@@ -83,7 +67,7 @@ internal class BechdelDataService
     return new FilmResult(count, pageCount, page, results);
   }
 
-  protected async Task<IEnumerable<FilmYear>?> LoadAsync()
+  protected async Task<IEnumerable<Film>?> LoadAsync()
   {
     if (_data is null)
     {
@@ -96,10 +80,67 @@ internal class BechdelDataService
       _logger.LogInformation("Loading From Data Json");
       var json = await File.ReadAllTextAsync("./bechdel.json");
       var bechdelData = JsonSerializer.Deserialize<BechdelFilms>(json, opts);
-      _data = bechdelData?.Years;
+      _data = MapToFilms(bechdelData?.Years);
       _logger.LogInformation("Loaded From Data Json");
     }
 
     return _data;
+  }
+
+  private IEnumerable<Film> MapToFilms(IEnumerable<FilmYear>? years)
+  {
+    var result = new List<Film>();
+
+    if (years is null) return result;
+
+    foreach (var year in years)
+    {
+      var films = year.Films.ToArray();
+    
+      foreach (var film in films)
+      {
+        var newFilm = new Film()
+        {
+          Year = year.Year,
+          Title = film.Title,
+          IMDBId = film.IMDBId,
+          Passed = film.Success,
+          Budget = film.Budget,
+          DomesticGross = film.DomesticGross,
+          InternationalGross = film.InternationalGross
+        };
+
+        switch (film.ResultReason)
+        {
+          case "ok":
+          case "ok-disagree":
+            newFilm.Reason = "Passed";
+            break;
+          case "dubious":
+          case "dubious-disagree":
+            newFilm.Reason = "Passed, but some users were skeptical of the result";
+            break;
+          case "notalk":
+          case "notalk-disagree":
+            newFilm.Reason = "Women do not talk";
+            break;
+          case "men":
+          case "men-disagree":
+            newFilm.Reason = "Women talk to each other about men";
+            break;
+          case "nowomen":
+          case "nowomen-disagree":
+            newFilm.Reason = "Less than two women in the film";
+            break;
+          default:
+            newFilm.Reason = "Unknown reason";
+            break;
+        }
+
+        result.Add(newFilm);
+      }
+    }
+
+    return result;
   }
 }
