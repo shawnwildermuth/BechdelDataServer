@@ -33,6 +33,17 @@ namespace BechdelDataServer.Tests
     [Fact]
     public async void CanGetFilmsFailedMax() => await TestFilmsMax("/api/films/failed");
 
-    
+    [Fact]
+    public async void CanGetFilmsPassedByYear() => await TestFilms("/api/films/passed/2013");
+
+    [Fact]
+    public async void CanGetFilmsPassedByYearMax() => await TestFilmsMax("/api/films/passed/2013");
+
+    [Fact]
+    public async void CanGetFilmsFailedByYear() => await TestFilms("/api/films/failed/2013");
+
+    [Fact]
+    public async void CanGetFilmsFailedByYearMax() => await TestFilmsMax("/api/films/failed/2013");
+
   }
 }
