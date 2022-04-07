@@ -1,12 +1,26 @@
 #region Wiring Up
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 bool isTesting = builder.Configuration.GetValue<bool>("IsTesting", true);
 
 Register(builder.Services);
 
+
+
 var app = builder.Build();
+
+if (args[0].ToUpper() == "/PROCESS")
+{
+  Console.WriteLine("Processing JSON, not running server");
+  var service = app.Services.GetService<BechdelDataService>();
+  if (service is null) return -1;
+  await service.ProcessJson();
+  return 0;
+}
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -32,6 +46,8 @@ app.UseSwaggerUI(c =>
 });
 
 app.Run();
+
+return 0;
 #endregion
 
 void MapApis(WebApplication app)

@@ -37,5 +37,23 @@
     /// The International Gross Sales in US Dollars
     /// </summary>
     public int InternationalGross { get; set; }
+
+    internal bool InfoLoaded { get; set;}
+    
+    /// <summary>
+    /// A link to a poster image (supplied by themoviedb.org)
+    /// </summary>
+    public string? PosterUrl { get; set; }
+
+    /// <summary>
+    /// A film summary
+    /// </summary>
+    public string? Overview { get; set; }
+
+    /// <summary>
+    /// Film Rating via IMDB
+    /// </summary>
+    public float Rating { get; set; }
+
   }
 }
