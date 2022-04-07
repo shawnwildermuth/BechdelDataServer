@@ -47,7 +47,7 @@ namespace BechdelDataServer.Tests
 
       var lastResult = await response.Content.ReadFromJsonAsync<FilmResult>();
 
-      Assert.True(result?.Results?.Any());
+      Assert.True(lastResult?.Results?.Any());
     }
 
     protected async Task<HttpResponseMessage> GetFilmResults(string url)
