@@ -45,5 +45,25 @@ namespace BechdelDataServer.Tests
     [Fact]
     public async void CanGetFilmsFailedByYearMax() => await TestFilmsMax("/api/films/failed/2013");
 
+
+    [Fact]
+    public async void CanGetFilmsByYear() => await TestFilms("/api/films/2013");
+
+    [Fact]
+    public async void CanGetFilmsByYearMax() => await TestFilmsMax("/api/films/2013");
+
+    [Fact]
+    public async void CanGetYears()
+    {
+      HttpResponseMessage response = await _client.GetAsync("/api/years");
+
+      Assert.True(response.IsSuccessStatusCode);
+      
+      var result = await response.Content.ReadFromJsonAsync<int[]>();
+
+      Assert.NotNull(result);
+      Assert.True(result?.Any());
+    }
+
   }
 }

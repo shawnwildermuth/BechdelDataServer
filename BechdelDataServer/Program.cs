@@ -47,6 +47,15 @@ void MapApis(WebApplication app)
     return Results.Ok(data);
   }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
 
+  app.MapGet("api/films/{year:int}", async (BechdelDataService ds, int? page, int? pageSize, int year) =>
+  {
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
+    int pageNumber = page ?? 1;
+    int pagerTake = pageSize ?? 50;
+    FilmResult data = await ds.LoadAllFilmsByYearAsync(pageNumber, pagerTake, year);
+    if (data.Results is null) return Results.NotFound();
+    return Results.Ok(data);
+  }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
 
   app.MapGet("api/films/failed", async (BechdelDataService ds, int? page, int? pageSize) =>
   {
@@ -87,6 +96,14 @@ void MapApis(WebApplication app)
     if (data.Results is null) Results.NotFound();
     return Results.Ok(data);
   }).Produces<IEnumerable<Film>>(contentType: "application/json").Produces(404).ProducesProblem(500);
+
+  app.MapGet("api/years", async (BechdelDataService ds) =>
+  {
+    if (ds is null) return Results.Problem("Server Error", statusCode: 500);
+    var data = await ds.LoadFilmYears();
+    if (data is null) Results.NotFound();
+    return Results.Ok(data);
+  }).Produces<int[]>(contentType: "application/json").Produces<string[]>(200).ProducesProblem(500);
 
 }
 

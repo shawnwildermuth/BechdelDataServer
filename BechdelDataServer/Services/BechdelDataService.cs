@@ -50,7 +50,18 @@ internal class BechdelDataService
   {
     var data = await LoadAsync();
 
-    IOrderedEnumerable<Film> qry = data.OrderBy(d => d.Year)
+    IOrderedEnumerable<Film> qry = data.OrderByDescending(d => d.Year)
+                                       .ThenBy(f => f.Title);
+
+    return GetFilmResult(qry, page, pageSize);
+  }
+
+  internal async Task<FilmResult> LoadAllFilmsByYearAsync(int page, int pageSize, int year)
+  {
+    var data = await LoadAsync();
+
+    IOrderedEnumerable<Film> qry = data.Where(d => d.Year == year)
+                                       .OrderByDescending(d => d.Year)
                                        .ThenBy(f => f.Title);
 
     return GetFilmResult(qry, page, pageSize);
@@ -88,4 +99,12 @@ internal class BechdelDataService
     return _data;
   }
 
+  internal async Task<int[]?> LoadFilmYears()
+  {
+    var data = await LoadAsync();
+    if (data is null) return null;
+
+    var results = data.OrderByDescending(d => d.Year).Select(d => d.Year).Distinct().ToArray();
+    return results;
   }
+}
