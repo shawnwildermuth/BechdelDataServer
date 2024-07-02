@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\main_bechdel.yml = .github\workflows\main_bechdel.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BechdelDataServer.Tests", "BechdelDataServer.Tests\BechdelDataServer.Tests.csproj", "{75E820D7-E36A-49E8-95A1-AFC76120A2D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BechdelDataServer.Tests", "BechdelDataServer.Tests\BechdelDataServer.Tests.csproj", "{75E820D7-E36A-49E8-95A1-AFC76120A2D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

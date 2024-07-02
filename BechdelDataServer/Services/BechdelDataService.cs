@@ -1,6 +1,6 @@
 ﻿namespace BechdelDataServer.Services;
 
-internal class BechdelDataService
+public class BechdelDataService
 {
   private readonly ILogger<BechdelDataService> _logger;
   private readonly IConfiguration _config;
