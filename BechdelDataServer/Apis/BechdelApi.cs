@@ -6,42 +6,54 @@ public class BechdelApi : IApi
 {
   public void Register(IEndpointRouteBuilder app)
   {
-    var group = app.MapGroup("/api/films");
+    var group = app.MapGroup("/api/films")
+      .WithGroupName("Film Apis")
+      .WithOpenApi();
 
-    group.MapGet("", GetAllFilms)
+    group.MapGet("/api/films", GetAllFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
-      .WithName("getallnames");
+      .WithName("getAllFilms")
+      .WithTags("Films")
+      .WithDescription("Gets all the Films")
+      .WithOpenApi();
 
-    group.MapGet("{year:int}", GetFilmByYear)
+    group.MapGet("/api/films/{year:int}", GetFilmByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
-    group.MapGet("failed", GetFailedFilms)
+    group.MapGet("/api/films/failed", GetFailedFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
-    group.MapGet("passed", GetPassedFilms)
+    group.MapGet("/api/films/passed", GetPassedFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
-    group.MapGet("failed/{year:int}", GetFailedFilmsByYear)
+    group.MapGet("/api/films/failed/{year:int}", GetFailedFilmsByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
-    group.MapGet("passed/{year:int}", GetPassedFilmsByYear)
+    group.MapGet("/api/films/passed/{year:int}", GetPassedFilmsByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
     app.MapGet("api/years", GetYears)
-      .Produces<int[]>().Produces<string[]>(200)
-      .ProducesProblem(500);
+      .Produces<int[]>()
+      .Produces<string[]>(200)
+      .ProducesProblem(500)
+      .WithOpenApi();
 
   }
 
