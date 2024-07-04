@@ -10,7 +10,7 @@ public class BechdelApi : IApi
       .WithGroupName("Film Apis")
       .WithOpenApi();
 
-    group.MapGet("/api/films", GetAllFilms)
+    group.MapGet("", GetAllFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
@@ -19,31 +19,31 @@ public class BechdelApi : IApi
       .WithDescription("Gets all the Films")
       .WithOpenApi();
 
-    group.MapGet("/api/films/{year:int}", GetFilmByYear)
+    group.MapGet("{year:int}", GetFilmByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/failed", GetFailedFilms)
+    group.MapGet("failed", GetFailedFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/passed", GetPassedFilms)
+    group.MapGet("passed", GetPassedFilms)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/failed/{year:int}", GetFailedFilmsByYear)
+    group.MapGet("failed/{year:int}", GetFailedFilmsByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/passed/{year:int}", GetPassedFilmsByYear)
+    group.MapGet("passed/{year:int}", GetPassedFilmsByYear)
       .Produces<IEnumerable<Film>>()
       .Produces(404)
       .ProducesProblem(500)
