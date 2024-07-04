@@ -1,50 +1,58 @@
 ﻿using MinimalApis.Discovery;
 using static Microsoft.AspNetCore.Http.Results;
+
 namespace BechdelDataServer.Apis;
 
 public class BechdelApi : IApi
 {
   public void Register(IEndpointRouteBuilder app)
   {
-    var group = app.MapGroup("/api/films")
-      .WithGroupName("Film Apis")
-      .WithOpenApi();
-
-    group.MapGet("/api/films", GetAllFilms)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/films", GetAllFilms)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithName("getAllFilms")
-      .WithTags("Films")
       .WithDescription("Gets all the Films")
       .WithOpenApi();
 
-    group.MapGet("/api/films/{year:int}", GetFilmByYear)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/film", async (BechdelDataService sc) =>
+    {
+      var result = await sc.LoadAllFilmsAsync(1, 1);
+      return Ok(result.Results?.First());
+    })
+      .Produces<Film>()
+      .Produces(404)
+      .ProducesProblem(500)
+      .WithName("getFilm")
+      .WithDescription("Get's a film")
+      .WithOpenApi();
+
+    app.MapGet("/api/films/{year:int}", GetFilmByYear)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/failed", GetFailedFilms)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/films/failed", GetFailedFilms)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/passed", GetPassedFilms)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/films/passed", GetPassedFilms)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/failed/{year:int}", GetFailedFilmsByYear)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/films/failed/{year:int}", GetFailedFilmsByYear)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
 
-    group.MapGet("/api/films/passed/{year:int}", GetPassedFilmsByYear)
-      .Produces<IEnumerable<Film>>()
+    app.MapGet("/api/films/passed/{year:int}", GetPassedFilmsByYear)
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithOpenApi();
