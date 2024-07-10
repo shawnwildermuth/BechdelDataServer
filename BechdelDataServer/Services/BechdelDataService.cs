@@ -107,4 +107,13 @@ public class BechdelDataService
     var results = data.OrderByDescending(d => d.Year).Select(d => d.Year).Distinct().ToArray();
     return results;
   }
+
+  internal async Task<Film?> FindFilmByImdbId(string imdbId)
+  {
+    var data = await LoadAsync();
+    if (data is null) return null;
+
+    var result = data.Where(f => f.IMDBId == imdbId).FirstOrDefault();
+    return result;
+  }
 }

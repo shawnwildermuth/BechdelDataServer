@@ -7,7 +7,10 @@ public class BechdelApi : IApi
 {
   public void Register(IEndpointRouteBuilder app)
   {
-    app.MapGet("/api/films", GetAllFilms)
+    var group = app.MapGroup("/api/films")
+      .WithOpenApi();
+
+    group.MapGet("", GetAllFilms)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
@@ -15,11 +18,7 @@ public class BechdelApi : IApi
       .WithDescription("Gets all the Films")
       .WithOpenApi();
 
-    app.MapGet("/api/film", async (BechdelDataService sc) =>
-    {
-      var result = await sc.LoadAllFilmsAsync(1, 1);
-      return Ok(result.Results?.First());
-    })
+    group.MapGet(@"{imdbId:regex(tt\\d{{7,9}})}", GetFilm)
       .Produces<Film>()
       .Produces(404)
       .ProducesProblem(500)
@@ -27,42 +26,61 @@ public class BechdelApi : IApi
       .WithDescription("Get's a film")
       .WithOpenApi();
 
-    app.MapGet("/api/films/{year:int}", GetFilmByYear)
+    group.MapGet("{year:int}", GetFilmByYear)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
+      .WithName("getFilmsByYear")
+      .WithDescription("Gets Films by Year")
       .WithOpenApi();
 
-    app.MapGet("/api/films/failed", GetFailedFilms)
+    group.MapGet("failed", GetFailedFilms)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
+      .WithName("getFailedFilms")
+      .WithDescription("Gets All Failed Films")
       .WithOpenApi();
 
-    app.MapGet("/api/films/passed", GetPassedFilms)
+    group.MapGet("passed", GetPassedFilms)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
+      .WithName("getPassedFilms")
+      .WithDescription("Gets All Passed Films")
       .WithOpenApi();
 
-    app.MapGet("/api/films/failed/{year:int}", GetFailedFilmsByYear)
+    group.MapGet("failed/{year:int}", GetFailedFilmsByYear)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
+      .WithName("getFailedFilmsByYear")
+      .WithDescription("Gets Failed Films by Year")
       .WithOpenApi();
 
-    app.MapGet("/api/films/passed/{year:int}", GetPassedFilmsByYear)
+    group.MapGet("passed/{year:int}", GetPassedFilmsByYear)
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
+      .WithName("getPassedFilmsByYear")
+      .WithDescription("Gets Passed Films by Year")
       .WithOpenApi();
 
     app.MapGet("api/years", GetYears)
       .Produces<int[]>()
       .Produces<string[]>(200)
       .ProducesProblem(500)
+      .WithName("getYears")
+      .WithDescription("Gets all the years that encompass the film library.")
       .WithOpenApi();
 
+  }
+
+  public async Task<IResult> GetFilm(BechdelDataService sc, string imdbId)
+  {
+    var result = await sc.FindFilmByImdbId(imdbId);
+    if (result is null) return NotFound();
+    return Ok(result);
   }
 
   public static async Task<IResult> GetAllFilms(BechdelDataService ds, int? page, int? pageSize)
