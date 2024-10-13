@@ -12,17 +12,20 @@ public class BechdelApi : IApi
       .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
-      .WithName("getallnames");
+      .WithName("getallnames")
+      .WithOpenApi();
 
     group.MapGet("{year:int}", GetFilmByYear)
       .Produces<FilmResult>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
     group.MapGet("failed", GetFailedFilms)
       .Produces<FilmResult>()
       .Produces(404)
-      .ProducesProblem(500);
+      .ProducesProblem(500)
+      .WithOpenApi();
 
     group.MapGet("passed", GetPassedFilms)
       .Produces<FilmResult>()
