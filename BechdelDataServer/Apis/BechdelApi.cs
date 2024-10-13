@@ -9,38 +9,38 @@ public class BechdelApi : IApi
     var group = app.MapGroup("/api/films");
 
     group.MapGet("", GetAllFilms)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500)
       .WithName("getallnames");
 
     group.MapGet("{year:int}", GetFilmByYear)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500);
 
     group.MapGet("failed", GetFailedFilms)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500);
 
     group.MapGet("passed", GetPassedFilms)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500);
 
     group.MapGet("failed/{year:int}", GetFailedFilmsByYear)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500);
 
     group.MapGet("passed/{year:int}", GetPassedFilmsByYear)
-      .Produces<IEnumerable<Film>>()
+      .Produces<FilmResult>()
       .Produces(404)
       .ProducesProblem(500);
 
     app.MapGet("api/years", GetYears)
-      .Produces<int[]>().Produces<string[]>(200)
+      .Produces<int[]>(200)
       .ProducesProblem(500);
 
   }
