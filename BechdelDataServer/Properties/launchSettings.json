@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "hotReloadEnabled": false,
-      "applicationUrl": "https://localhost:8080",
+      "applicationUrl": "http://localhost:8888",
       "dotnetRunMessages": true,
       "nativeDebugging": false
     },

@@ -9,24 +9,22 @@ builder.Services.AddSingleton<BechdelDataService>();
 
 builder.Services.AddCors();
 
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(setup =>
+{
+  if (!isTesting)
+  {
+    var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"BechdelDataServer.xml"));
+    setup.IncludeXmlComments(path);
+  }
 
-//builder.Services.AddSwaggerGen(setup =>
-//{
-//  if (!isTesting)
-//  {
-//    var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"BechdelDataServer.xml"));
-//    setup.IncludeXmlComments(path);
-//  }
-  
-//  setup.SwaggerDoc("v1", new OpenApiInfo()
-//  {
-//    Description = "Bechdel Test API using data from FiveThirtyEight.com",
-//    Title = "Bechdel Test API",
-//    Version = "v1"
-//  });
+  setup.SwaggerDoc("v1", new OpenApiInfo()
+  {
+    Description = "Bechdel Test API using data from FiveThirtyEight.com",
+    Title = "Bechdel Test API",
+    Version = "v1"
+  });
 
-//});
+});
 
 var app = builder.Build();
 
@@ -37,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+
 app.UseCors(cfg =>
 {
   cfg.WithMethods("GET");
@@ -45,10 +43,8 @@ app.UseCors(cfg =>
   cfg.AllowAnyOrigin();
 });
 
-//app.UseSwagger();
-//app.UseSwaggerUI();
-
-app.MapOpenApi("/docs/api/openapi.json");
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapApis();
 
