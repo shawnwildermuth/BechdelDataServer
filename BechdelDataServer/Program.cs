@@ -4,7 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 bool isTesting = builder.Configuration.GetValue<bool>("IsTesting", true);
 
-//builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddSingleton<BechdelDataService>();
 
 builder.Services.AddCors();
